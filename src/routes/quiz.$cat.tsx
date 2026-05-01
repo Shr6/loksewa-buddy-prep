@@ -45,10 +45,7 @@ function QuizPage() {
 
   const next = () => {
     if (idx + 1 >= questions.length) {
-      saveQuizResult(catKey, score + (selected === q.correctIndex ? 0 : 0), questions.length);
-      // score already updated; ensure final value persisted
-      const finalScore = score + (revealed ? 0 : selected === q.correctIndex ? 1 : 0);
-      saveQuizResult(catKey, finalScore, questions.length);
+      saveQuizResult(catKey, score, questions.length);
       setDone(true);
     } else {
       setIdx(idx + 1);
