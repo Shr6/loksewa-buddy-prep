@@ -1,8 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { AdSlot } from "@/components/AdSlot";
+import { QuizProgress } from "@/components/QuizProgress";
 import { CATEGORIES, type CategoryKey } from "@/data/questions";
+import { CATEGORY_ICONS, CATEGORY_GRADIENT } from "@/lib/category-assets";
 import { pickQuizQuestions } from "@/lib/quiz-utils";
 
 export const Route = createFileRoute("/fast-quiz")({
@@ -16,7 +18,6 @@ export const Route = createFileRoute("/fast-quiz")({
 });
 
 function FastQuiz() {
-  const navigate = useNavigate();
   const [cat, setCat] = useState<CategoryKey | null>(null);
   const [answers, setAnswers] = useState<(number | null)[]>([]);
   const [idx, setIdx] = useState(0);
@@ -26,12 +27,17 @@ function FastQuiz() {
 
   if (!cat) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <AppHeader />
         <main className="max-w-3xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold">Fast Quiz ⚡</h1>
-          <p className="text-muted-foreground mt-1">10 questions. Review at the end.</p>
-          <div className="grid sm:grid-cols-2 gap-3 mt-5">
+          <div className="rounded-3xl bg-hero-gradient p-6 text-primary-foreground shadow-elevate relative overflow-hidden">
+            <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-white/15 blur-3xl" />
+            <div className="text-4xl">⚡</div>
+            <h1 className="text-2xl font-bold mt-2">Fast Quiz</h1>
+            <p className="opacity-90 text-sm mt-1">10 quick questions. Review at the end.</p>
+          </div>
+          <h2 className="mt-6 mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider px-1">Choose category</h2>
+          <div className="grid sm:grid-cols-2 gap-3">
             {CATEGORIES.map((c) => (
               <button
                 key={c.key}
@@ -39,11 +45,16 @@ function FastQuiz() {
                   setCat(c.key);
                   setAnswers(Array(10).fill(null));
                 }}
-                className="rounded-2xl border border-border bg-card p-5 hover:shadow-[var(--shadow-soft)] text-left"
+                className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 hover:shadow-elevate transition-all hover:-translate-y-0.5 text-left"
               >
-                <div className="text-3xl">{c.emoji}</div>
-                <div className="font-semibold mt-2">{c.label}</div>
-                <div className="text-xs text-muted-foreground">Start →</div>
+                <div className={`absolute inset-0 bg-gradient-to-br ${CATEGORY_GRADIENT[c.key]} opacity-60`} />
+                <div className="relative flex items-center gap-3">
+                  <img src={CATEGORY_ICONS[c.key]} alt="" loading="lazy" className="h-14 w-14 object-contain group-hover:scale-110 transition-transform" />
+                  <div>
+                    <div className="font-semibold">{c.label}</div>
+                    <div className="text-xs text-muted-foreground">Start →</div>
+                  </div>
+                </div>
               </button>
             ))}
           </div>
@@ -55,13 +66,15 @@ function FastQuiz() {
   if (done) {
     const score = questions.reduce((acc, q, i) => acc + (answers[i] === q.correctIndex ? 1 : 0), 0);
     const pct = Math.round((score / questions.length) * 100);
+    const emoji = pct >= 80 ? "🏆" : pct >= 60 ? "🎉" : pct >= 40 ? "💪" : "📚";
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <AppHeader />
         <main className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-          <div className="rounded-3xl bg-[image:var(--gradient-hero)] p-8 text-primary-foreground text-center shadow-[var(--shadow-elevate)]">
+          <div className="relative overflow-hidden rounded-3xl bg-hero-gradient p-8 text-primary-foreground text-center shadow-elevate animate-pop-in">
+            <div className="text-6xl mb-2">{emoji}</div>
             <p className="text-sm opacity-90">Fast Quiz Complete</p>
-            <div className="text-6xl font-bold mt-2">{pct}%</div>
+            <div className="text-7xl font-bold mt-1 tracking-tight">{pct}%</div>
             <p className="mt-2 opacity-90">{score} / {questions.length} correct</p>
           </div>
 
@@ -70,20 +83,20 @@ function FastQuiz() {
               const userAns = answers[i];
               const correct = userAns === q.correctIndex;
               return (
-                <div key={i} className="rounded-2xl bg-card border border-border p-4">
-                  <div className="flex items-start gap-2">
-                    <span className={`mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${correct ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground"}`}>
+                <div key={i} className="rounded-2xl bg-card border border-border p-4 shadow-soft">
+                  <div className="flex items-start gap-3">
+                    <span className={`mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${correct ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground"}`}>
                       {correct ? "✓" : "✗"}
                     </span>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm">{i + 1}. {q.question}</div>
-                      <div className="mt-2 text-sm">
+                      <div className="mt-2 text-sm space-y-0.5">
                         <div className="text-success">Correct: {q.options[q.correctIndex]}</div>
                         {!correct && userAns !== null && (
                           <div className="text-destructive">Your answer: {q.options[userAns]}</div>
                         )}
                       </div>
-                      <p className="mt-2 text-xs text-muted-foreground">{q.explanation}</p>
+                      <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{q.explanation}</p>
                     </div>
                   </div>
                 </div>
@@ -92,10 +105,10 @@ function FastQuiz() {
           </div>
 
           <div className="flex gap-3">
-            <button onClick={() => { setCat(null); setIdx(0); setDone(false); }} className="flex-1 rounded-xl bg-primary text-primary-foreground py-3 font-semibold">
+            <button onClick={() => { setCat(null); setIdx(0); setDone(false); }} className="flex-1 rounded-xl bg-primary text-primary-foreground py-3.5 font-semibold">
               New quiz
             </button>
-            <Link to="/" className="flex-1 rounded-xl border border-border py-3 font-semibold text-center">Home</Link>
+            <Link to="/" className="flex-1 rounded-xl border border-border bg-card py-3.5 font-semibold text-center">Home</Link>
           </div>
         </main>
       </div>
@@ -104,22 +117,17 @@ function FastQuiz() {
 
   const q = questions[idx];
   const sel = answers[idx];
+  const meta = CATEGORIES.find((c) => c.key === cat)!;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <AppHeader />
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium">⚡ Fast Quiz</span>
-          <span className="text-muted-foreground">{idx + 1} / {questions.length}</span>
-        </div>
-        <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-          <div className="h-full bg-[image:var(--gradient-hero)] transition-all" style={{ width: `${((idx + 1) / questions.length) * 100}%` }} />
-        </div>
+      <main className="max-w-3xl mx-auto px-4 py-5 space-y-5">
+        <QuizProgress current={idx + 1} total={questions.length} emoji="⚡" label={`Fast Quiz · ${meta.label}`} />
 
-        <div className="rounded-2xl bg-card border border-border p-5 shadow-[var(--shadow-soft)]">
-          <h2 className="text-lg font-semibold leading-snug">{q.question}</h2>
-          <div className="mt-4 space-y-2">
+        <div key={idx} className="rounded-3xl bg-card border border-border p-5 sm:p-6 shadow-soft animate-pop-in">
+          <h2 className="text-base sm:text-lg font-semibold leading-snug">{q.question}</h2>
+          <div className="mt-5 grid gap-2.5">
             {q.options.map((opt, i) => (
               <button
                 key={i}
@@ -128,9 +136,12 @@ function FastQuiz() {
                   next[idx] = i;
                   setAnswers(next);
                 }}
-                className={`w-full text-left rounded-xl border-2 px-4 py-3 transition-colors ${sel === i ? "border-primary bg-primary/5" : "border-border bg-background hover:bg-muted"}`}
+                className={`w-full text-left rounded-2xl border-2 px-3 sm:px-4 py-3 sm:py-3.5 transition-all flex items-center gap-3 ${sel === i ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border bg-background hover:bg-muted hover:border-primary/30"}`}
               >
-                <span className="font-medium mr-2">{String.fromCharCode(65 + i)}.</span>{opt}
+                <span className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg font-bold text-sm ${sel === i ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                  {String.fromCharCode(65 + i)}
+                </span>
+                <span className="flex-1 text-sm sm:text-base leading-snug">{opt}</span>
               </button>
             ))}
           </div>
@@ -140,9 +151,9 @@ function FastQuiz() {
               if (idx + 1 >= questions.length) setDone(true);
               else setIdx(idx + 1);
             }}
-            className="mt-5 w-full rounded-xl bg-primary text-primary-foreground py-3 font-semibold disabled:opacity-50"
+            className="mt-5 w-full rounded-xl bg-hero-gradient text-primary-foreground py-3.5 font-semibold disabled:opacity-50 shadow-sog"
           >
-            {idx + 1 >= questions.length ? "Finish" : "Next"}
+            {idx + 1 >= questions.length ? "Finish 🏁" : "Next →"}
           </button>
         </div>
 
