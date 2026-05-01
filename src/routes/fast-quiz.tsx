@@ -151,7 +151,7 @@ function FastQuiz() {
               if (idx + 1 >= questions.length) setDone(true);
               else setIdx(idx + 1);
             }}
-            className="mt-5 w-full rounded-xl bg-hero-gradient text-primary-foreground py-3.5 font-semibold disabled:opacity-50 shadow-sog"
+            className="mt-5 w-full rounded-xl bg-hero-gradient text-primary-foreground py-3.5 font-semibold disabled:opacity-50 shadow-soft"
           >
             {idx + 1 >= questions.length ? "Finish 🏁" : "Next →"}
           </button>
