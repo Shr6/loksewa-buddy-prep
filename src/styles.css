@@ -184,5 +184,9 @@
     33% { transform: translate(20px,-15px) scale(1.05); }
     66% { transform: translate(-15px,10px) scale(0.97); }
   }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
   .animate-blob { animation: blob-drift 14s ease-in-out infinite; }
 }
