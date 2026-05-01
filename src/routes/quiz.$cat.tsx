@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { AdSlot } from "@/components/AdSlot";
+import { QuizProgress } from "@/components/QuizProgress";
 import { CATEGORIES, type CategoryKey } from "@/data/questions";
+import { CATEGORY_ICONS } from "@/lib/category-assets";
 import { pickQuizQuestions } from "@/lib/quiz-utils";
 import { saveQuizResult } from "@/lib/storage";
 
@@ -25,7 +27,7 @@ function QuizPage() {
 
   if (!meta) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <AppHeader />
         <main className="max-w-3xl mx-auto px-4 py-10 text-center">
           <p>Unknown category.</p>
@@ -56,25 +58,28 @@ function QuizPage() {
 
   if (done) {
     const pct = Math.round((score / questions.length) * 100);
+    const emoji = pct >= 80 ? "🏆" : pct >= 60 ? "🎉" : pct >= 40 ? "💪" : "📚";
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <AppHeader />
         <main className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-          <div className="rounded-3xl bg-[image:var(--gradient-hero)] p-8 text-primary-foreground text-center shadow-[var(--shadow-elevate)]">
+          <div className="relative overflow-hidden rounded-3xl bg-hero-gradient p-8 text-primary-foreground text-center shadow-elevate animate-pop-in">
+            <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/15 blur-3xl" />
+            <div className="text-6xl mb-2">{emoji}</div>
             <p className="text-sm opacity-90">{meta.label} Quiz Complete</p>
-            <div className="text-6xl font-bold mt-2">{pct}%</div>
+            <div className="text-7xl font-bold mt-1 tracking-tight">{pct}%</div>
             <p className="mt-2 opacity-90">You scored {score} out of {questions.length}</p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => navigate({ to: "/quiz/$cat", params: { cat: catKey } })}
-              className="flex-1 rounded-xl bg-primary text-primary-foreground py-3 font-semibold hover:opacity-90"
+              className="flex-1 rounded-xl bg-primary text-primary-foreground py-3.5 font-semibold hover:opacity-90"
             >
               Try again
             </button>
             <button
               onClick={() => navigate({ to: "/" })}
-              className="flex-1 rounded-xl border border-border py-3 font-semibold hover:bg-muted"
+              className="flex-1 rounded-xl border border-border bg-card py-3.5 font-semibold hover:bg-muted"
             >
               Home
             </button>
@@ -86,56 +91,73 @@ function QuizPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <AppHeader />
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium">{meta.emoji} {meta.label}</span>
-          <span className="text-muted-foreground">Question {idx + 1} / {questions.length}</span>
-        </div>
-        <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-          <div
-            className="h-full bg-[image:var(--gradient-hero)] transition-all"
-            style={{ width: `${((idx + (revealed ? 1 : 0)) / questions.length) * 100}%` }}
-          />
-        </div>
+      <main className="max-w-3xl mx-auto px-4 py-5 space-y-5">
+        <QuizProgress
+          current={idx + 1}
+          total={questions.length}
+          emoji={meta.emoji}
+          label={meta.label}
+        />
 
         {idx === 4 && <AdSlot label="Advertisement" size="inline" />}
 
-        <div className="rounded-2xl bg-card border border-border p-5 shadow-[var(--shadow-soft)]">
-          <h2 className="text-lg font-semibold leading-snug">{q.question}</h2>
-          <div className="mt-4 space-y-2">
+        <div key={idx} className="rounded-3xl bg-card border border-border p-5 sm:p-6 shadow-soft animate-pop-in">
+          <div className="flex items-start gap-3">
+            <img src={CATEGORY_ICONS[catKey]} alt="" loading="lazy" className="h-10 w-10 object-contain shrink-0" />
+            <h2 className="text-base sm:text-lg font-semibold leading-snug">{q.question}</h2>
+          </div>
+          <div className="mt-5 grid gap-2.5">
             {q.options.map((opt, i) => {
               const isSel = selected === i;
               const isCorrect = i === q.correctIndex;
-              let cls = "border-border bg-background hover:bg-muted";
+              let cls = "border-border bg-background hover:bg-muted hover:border-primary/30";
+              let badgeCls = "bg-muted text-muted-foreground";
+              let tail: React.ReactNode = null;
               if (revealed) {
-                if (isCorrect) cls = "border-success bg-success/10 text-foreground";
-                else if (isSel) cls = "border-destructive bg-destructive/10 text-foreground";
-                else cls = "border-border bg-background opacity-70";
+                if (isCorrect) {
+                  cls = "border-success bg-success/10 text-foreground";
+                  badgeCls = "bg-success text-success-foreground";
+                  tail = <span className="text-success font-bold">✓</span>;
+                } else if (isSel) {
+                  cls = "border-destructive bg-destructive/10 text-foreground";
+                  badgeCls = "bg-destructive text-destructive-foreground";
+                  tail = <span className="text-destructive font-bold">✗</span>;
+                } else {
+                  cls = "border-border bg-background opacity-60";
+                }
               } else if (isSel) {
-                cls = "border-primary bg-primary/5";
+                cls = "border-primary bg-primary/5 ring-2 ring-primary/20";
+                badgeCls = "bg-primary text-primary-foreground";
               }
               return (
                 <button
                   key={i}
                   disabled={revealed}
                   onClick={() => setSelected(i)}
-                  className={`w-full text-left rounded-xl border-2 px-4 py-3 transition-colors ${cls}`}
+                  className={`w-full text-left rounded-2xl border-2 px-3 sm:px-4 py-3 sm:py-3.5 transition-all flex items-center gap-3 ${cls}`}
                 >
-                  <span className="font-medium mr-2">{String.fromCharCode(65 + i)}.</span>
-                  {opt}
+                  <span className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg font-bold text-sm transition-colors ${badgeCls}`}>
+                    {String.fromCharCode(65 + i)}
+                  </span>
+                  <span className="flex-1 text-sm sm:text-base leading-snug">{opt}</span>
+                  {tail}
                 </button>
               );
             })}
           </div>
 
           {revealed && (
-            <div className="mt-4 rounded-xl bg-muted p-4 text-sm">
-              <div className="font-semibold mb-1">
-                {selected === q.correctIndex ? "✅ Correct!" : "❌ Not quite"}
+            <div className="mt-5 rounded-2xl bg-muted/70 p-4 text-sm animate-pop-in border border-border">
+              <div className="font-semibold mb-1.5 flex items-center gap-2">
+                {selected === q.correctIndex ? (
+                  <><span className="text-success">✅ Correct!</span></>
+                ) : (
+                  <><span className="text-destructive">❌ Not quite</span></>
+                )}
               </div>
-              <p className="text-muted-foreground">{q.explanation}</p>
+              <p className="text-muted-foreground leading-relaxed">{q.explanation}</p>
             </div>
           )}
 
@@ -144,16 +166,16 @@ function QuizPage() {
               <button
                 disabled={selected === null}
                 onClick={submit}
-                className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-semibold disabled:opacity-50 hover:opacity-90"
+                className="w-full rounded-xl bg-primary text-primary-foreground py-3.5 font-semibold disabled:opacity-50 hover:opacity-90 transition-opacity"
               >
                 Check answer
               </button>
             ) : (
               <button
                 onClick={next}
-                className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-semibold hover:opacity-90"
+                className="w-full rounded-xl bg-hero-gradient text-primary-foreground py-3.5 font-semibold hover:opacity-95 transition-opacity shadow-soft"
               >
-                {idx + 1 >= questions.length ? "See results" : "Next question"}
+                {idx + 1 >= questions.length ? "See results 🏁" : "Next question →"}
               </button>
             )}
           </div>
