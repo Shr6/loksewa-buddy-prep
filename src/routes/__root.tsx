@@ -29,14 +29,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Loksewa Prep — Nepal Public Service Exam Practice" },
+      { name: "description", content: "Practice Loksewa exams with quizzes, fast quizzes, and timed mock exams. Free and mobile-friendly." },
+      { name: "author", content: "Loksewa Prep" },
+      { property: "og:title", content: "Loksewa Prep" },
+      { property: "og:description", content: "Quizzes & timed mock exams for Nepal Public Service Commission preparation." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
