@@ -156,5 +156,33 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    background-image: var(--gradient-mesh);
+    background-attachment: fixed;
   }
+}
+
+@layer utilities {
+  .bg-hero-gradient { background-image: var(--gradient-hero); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-elevate { box-shadow: var(--shadow-elevate); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+  .animate-float { animation: float-slow 6s ease-in-out infinite; }
+
+  @keyframes pop-in {
+    0% { opacity: 0; transform: scale(0.97) translateY(6px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-pop-in { animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  @keyframes blob-drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(20px,-15px) scale(1.05); }
+    66% { transform: translate(-15px,10px) scale(0.97); }
+  }
+  .animate-blob { animation: blob-drift 14s ease-in-out infinite; }
 }
