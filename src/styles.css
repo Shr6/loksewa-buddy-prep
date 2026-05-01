@@ -92,10 +92,12 @@
   --border: oklch(0.91 0.015 250);
   --input: oklch(0.91 0.015 250);
   --ring: oklch(0.55 0.18 260);
-  --gradient-hero: linear-gradient(135deg, oklch(0.55 0.18 260), oklch(0.7 0.18 290));
+  --gradient-hero: linear-gradient(135deg, oklch(0.58 0.2 265), oklch(0.68 0.18 295) 50%, oklch(0.72 0.16 200));
+  --gradient-mesh: radial-gradient(at 20% 10%, oklch(0.7 0.18 270 / 0.25) 0, transparent 50%), radial-gradient(at 80% 0%, oklch(0.72 0.16 200 / 0.2) 0, transparent 50%), radial-gradient(at 50% 100%, oklch(0.78 0.14 150 / 0.15) 0, transparent 50%);
   --gradient-card: linear-gradient(135deg, oklch(0.55 0.18 260 / 0.08), oklch(0.7 0.17 180 / 0.08));
   --shadow-soft: 0 4px 20px -8px oklch(0.55 0.18 260 / 0.25);
-  --shadow-elevate: 0 10px 40px -12px oklch(0.55 0.18 260 / 0.35);
+  --shadow-elevate: 0 20px 50px -15px oklch(0.55 0.18 260 / 0.4);
+  --shadow-glow: 0 0 0 1px oklch(0.55 0.18 260 / 0.1), 0 8px 30px -8px oklch(0.55 0.18 260 / 0.3);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -154,5 +156,37 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    background-image: var(--gradient-mesh);
+    background-attachment: fixed;
   }
+}
+
+@layer utilities {
+  .bg-hero-gradient { background-image: var(--gradient-hero); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-elevate { box-shadow: var(--shadow-elevate); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+  .animate-float { animation: float-slow 6s ease-in-out infinite; }
+
+  @keyframes pop-in {
+    0% { opacity: 0; transform: scale(0.97) translateY(6px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-pop-in { animation: pop-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  @keyframes blob-drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(20px,-15px) scale(1.05); }
+    66% { transform: translate(-15px,10px) scale(0.97); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-blob { animation: blob-drift 14s ease-in-out infinite; }
 }
