@@ -9,9 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StatsRouteImport } from './routes/stats'
+import { Route as FastQuizRouteImport } from './routes/fast-quiz'
+import { Route as ExamRouteImport } from './routes/exam'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuizIndexRouteImport } from './routes/quiz.index'
+import { Route as QuizCatRouteImport } from './routes/quiz.$cat'
 
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FastQuizRoute = FastQuizRouteImport.update({
+  id: '/fast-quiz',
+  path: '/fast-quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamRoute = ExamRouteImport.update({
+  id: '/exam',
+  path: '/exam',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -22,35 +41,84 @@ const QuizIndexRoute = QuizIndexRouteImport.update({
   path: '/quiz/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuizCatRoute = QuizCatRouteImport.update({
+  id: '/quiz/$cat',
+  path: '/quiz/$cat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/exam': typeof ExamRoute
+  '/fast-quiz': typeof FastQuizRoute
+  '/stats': typeof StatsRoute
+  '/quiz/$cat': typeof QuizCatRoute
   '/quiz/': typeof QuizIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/exam': typeof ExamRoute
+  '/fast-quiz': typeof FastQuizRoute
+  '/stats': typeof StatsRoute
+  '/quiz/$cat': typeof QuizCatRoute
   '/quiz': typeof QuizIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/exam': typeof ExamRoute
+  '/fast-quiz': typeof FastQuizRoute
+  '/stats': typeof StatsRoute
+  '/quiz/$cat': typeof QuizCatRoute
   '/quiz/': typeof QuizIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/quiz/'
+  fullPaths: '/' | '/exam' | '/fast-quiz' | '/stats' | '/quiz/$cat' | '/quiz/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/quiz'
-  id: '__root__' | '/' | '/quiz/'
+  to: '/' | '/exam' | '/fast-quiz' | '/stats' | '/quiz/$cat' | '/quiz'
+  id:
+    | '__root__'
+    | '/'
+    | '/exam'
+    | '/fast-quiz'
+    | '/stats'
+    | '/quiz/$cat'
+    | '/quiz/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ExamRoute: typeof ExamRoute
+  FastQuizRoute: typeof FastQuizRoute
+  StatsRoute: typeof StatsRoute
+  QuizCatRoute: typeof QuizCatRoute
   QuizIndexRoute: typeof QuizIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fast-quiz': {
+      id: '/fast-quiz'
+      path: '/fast-quiz'
+      fullPath: '/fast-quiz'
+      preLoaderRoute: typeof FastQuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exam': {
+      id: '/exam'
+      path: '/exam'
+      fullPath: '/exam'
+      preLoaderRoute: typeof ExamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +133,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quiz/$cat': {
+      id: '/quiz/$cat'
+      path: '/quiz/$cat'
+      fullPath: '/quiz/$cat'
+      preLoaderRoute: typeof QuizCatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ExamRoute: ExamRoute,
+  FastQuizRoute: FastQuizRoute,
+  StatsRoute: StatsRoute,
+  QuizCatRoute: QuizCatRoute,
   QuizIndexRoute: QuizIndexRoute,
 }
 export const routeTree = rootRouteImport
