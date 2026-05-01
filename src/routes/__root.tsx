@@ -32,10 +32,14 @@ export const Route = createRootRoute({
       { title: "Loksewa Prep — Nepal Public Service Exam Practice" },
       { name: "description", content: "Practice Loksewa exams with quizzes, fast quizzes, and timed mock exams. Free and mobile-friendly." },
       { name: "author", content: "Loksewa Prep" },
-      { property: "og:title", content: "Loksewa Prep" },
-      { property: "og:description", content: "Quizzes & timed mock exams for Nepal Public Service Commission preparation." },
+      { property: "og:title", content: "Loksewa Prep — Nepal Public Service Exam Practice" },
+      { property: "og:description", content: "Practice Loksewa exams with quizzes, fast quizzes, and timed mock exams. Free and mobile-friendly." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Loksewa Prep — Nepal Public Service Exam Practice" },
+      { name: "twitter:description", content: "Practice Loksewa exams with quizzes, fast quizzes, and timed mock exams. Free and mobile-friendly." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/v4DWWwPZKTh4mhVUNKVAkuGrXY23/social-images/social-1777648194717-Gemini_Generated_Image_3d9urh3d9urh3d9u.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/v4DWWwPZKTh4mhVUNKVAkuGrXY23/social-images/social-1777648194717-Gemini_Generated_Image_3d9urh3d9urh3d9u.webp" },
     ],
     links: [
       {
